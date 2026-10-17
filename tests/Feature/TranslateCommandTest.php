@@ -63,6 +63,18 @@ class TranslateCommandTest extends TestCase
         $this->assertFileExists($this->dir.'/lang/es.json');
     }
 
+    public function test_includes_keys_from_other_locale_files_that_the_scanner_cannot_see(): void
+    {
+        // Clé construite dynamiquement (__(item.title)) : absente du code mais présente dans en.json.
+        File::put($this->dir.'/lang/en.json', json_encode(['Invitations personnelles' => 'Personal invitations']));
+        File::put($this->dir.'/src/a.php', "<?php __('Bonjour');");
+        $client = $this->fakeClient();
+
+        $this->artisan('deepl:translate', ['locale' => 'es'])->assertSuccessful();
+
+        $this->assertEqualsCanonicalizing(['Bonjour', 'Invitations personnelles'], $client->sentTexts());
+    }
+
     public function test_force_retranslates_existing_keys(): void
     {
         File::put($this->dir.'/src/a.php', "<?php __('Bonjour');");

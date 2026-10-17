@@ -50,7 +50,7 @@ php artisan deepl:translate de --scan=app --scan=resources/js
 php artisan deepl:usage                   # caractères consommés ce mois-ci
 ```
 
-`deepl:translate` collecte les clés dans `lang/{source}.json` (s'il existe) et dans les littéraux `__('…')`, `trans('…')`, `@lang('…')` des dossiers `scan_paths` (`app`, `resources/js`, `resources/views` par défaut). Les clés de type `auth.failed` sont ignorées. Les traductions déjà présentes sont conservées : relisez et corrigez-les à la main sans crainte de les perdre.
+`deepl:translate` collecte les clés de tous les `lang/*.json` existants (ce qui couvre les clés construites dynamiquement, comme `__(item.title)`, que le scanner ne peut pas voir) et dans les littéraux `__('…')`, `trans('…')`, `@lang('…')` des dossiers `scan_paths` (`app`, `resources/js`, `resources/views` par défaut). Les clés de type `auth.failed` sont ignorées. Les traductions déjà présentes sont conservées : relisez et corrigez-les à la main sans crainte de les perdre.
 
 ## Tests
 

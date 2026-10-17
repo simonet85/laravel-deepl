@@ -67,13 +67,21 @@ class TranslateCommand extends Command
     }
 
     /**
-     * Clés = clés du JSON de la langue source (si présent) + littéraux trouvés dans le code.
+     * Clés = clés de tous les lang/*.json existants + littéraux trouvés dans le code.
      *
      * @return list<string>
      */
     private function collectKeys(string $directory, ?string $source): array
     {
-        $keys = $source ? array_keys($this->readJson("{$directory}/{$source}.json")) : [];
+        // Clés déjà connues : celles de tous les lang/*.json (langue source, mais aussi les autres
+        // locales), ce qui couvre les clés construites dynamiquement, invisibles pour le scanner.
+        $keys = [];
+        foreach (glob("{$directory}/*.json") ?: [] as $file) {
+            array_push($keys, ...array_keys($this->readJson($file)));
+        }
+        if ($source) {
+            array_push($keys, ...array_keys($this->readJson("{$directory}/{$source}.json")));
+        }
 
         $paths = $this->option('scan') ?: config('deepl.scan_paths', []);
         foreach ($paths as $path) {
